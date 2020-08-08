@@ -1087,6 +1087,7 @@
       createTree: function( grid, renderableRows ) {
         var currentLevel = -1,
           parents = [],
+          parentLevels = [],
           currentState;
 
         grid.treeBase.tree = [];
@@ -1103,8 +1104,9 @@
             // pop any levels that aren't parents of this level, formatting the aggregation at the same time
             while ( row.treeLevel <= currentLevel ) {
               var lastParent = parents.pop();
+              var lastParentLevel = parentLevels.pop()
               service.finaliseAggregations( lastParent );
-              currentLevel--;
+              currentLevel = parentLevels[parentLevels.length - 1];
             }
 
             // reset our current state based on the new parent, set to expanded if this is a level 0 node
@@ -1126,7 +1128,8 @@
 
           if ( typeof(row.treeLevel) !== 'undefined' && row.treeLevel !== null && row.treeLevel >= 0 ) {
             parents.push(row);
-            currentLevel++;
+            parentLevels.push(row.treeLevel);
+            currentLevel = row.treeLevel;
             currentState = service.setCurrentState(parents);
           }
 
